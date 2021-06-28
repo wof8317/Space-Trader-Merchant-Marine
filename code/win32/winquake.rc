@@ -51,9 +51,9 @@ END
 // INFO
 //
 
-IDR_INFO_SVNSTAT        INFO                    "..\\status-info\\versions"
-IDR_INFO_BUILDCONFIG    INFO                    "..\\status-info\\build-config"
-IDR_INFO_BUILDMACHINE   INFO                    "..\\status-info\\build-machine"
+//IDR_INFO_SVNSTAT        INFO                    "..\\status-info\\versions"
+//IDR_INFO_BUILDCONFIG    INFO                    "..\\status-info\\build-config"
+//IDR_INFO_BUILDMACHINE   INFO                    "..\\status-info\\build-machine"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
