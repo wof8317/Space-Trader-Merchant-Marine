@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>SpaceTrader_plugin</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.hermitworks.ige</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>WBPL</string>
+	<key>CFBundleSignature</key>
+	<string>HW</string>
+	<key>CFBundleVersion</key>
+	<string>0.101.0</string>
+	<key>CSResourcesFileMapped</key>
+	<string>yes</string>
+	<key>WebPluginDescription</key>
+	<string>Hermitworks Internet Game Engine</string>
+	<key>WebPluginMIMETypes</key>
+	<dict>
+		<key>application/x-hermitworks</key>
+		<dict>
+			<key>WebPluginExtensions</key>
+			<array>
+				<string>hwp</string>
+			</array>
+			<key>WebPluginTypeDescription</key>
+			<string>Hermitworks Entertainment Internet Game Engine 0.101.0</string>
+		</dict>
+	</dict>
+	<key>WebPluginName</key>
+	<string>Hermitworks Internet Game Engine</string>
+</dict>
+</plist>

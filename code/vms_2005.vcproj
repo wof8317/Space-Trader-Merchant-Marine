@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="vms"
+	ProjectGUID="{C7C390EA-69FB-4ED9-886C-C09519268607}"
+	RootNamespace="vms"
+	Keyword="MakeFileProj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)bin\vm"
+			IntermediateDirectory="$(SolutionDir)obj\vm"
+			ConfigurationType="0"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="set PATH=%PATH%;$(SolutionDir)..\tools\qvm\bin\release&#x0D;&#x0A;nmake -nologo -f $(SolutionDir)vm.nmake&#x0D;&#x0A;copy /Y &quot;bin\vm\*&quot; &quot;$(SolutionDir)..\game\st\vm\&quot;"
+				ReBuildCommandLine="set PATH=%PATH%;$(SolutionDir)..\tools\qvm\bin\release&#x0D;&#x0A;nmake -nologo -f $(SolutionDir)vm.nmake rebuild&#x0D;&#x0A;copy /Y &quot;bin\vm\*&quot; &quot;$(SolutionDir)..\game\st\vm\&quot;"
+				CleanCommandLine="set PATH=%PATH%;$(SolutionDir)..\tools\qvm\bin\release&#x0D;&#x0A;nmake -nologo -f $(SolutionDir)vm.nmake clean"
+				Output=""
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath=".\vm.nmake"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

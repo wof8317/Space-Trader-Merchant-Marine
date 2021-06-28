@@ -1,0 +1,196 @@
+.SILENT:
+
+all : vm_ui vm_cgame vm_game
+rebuild : clean all
+
+Lcc = lcc.exe
+LccOpts = -N -DQ3_VM -S -Wf-target=bytecode -Wf-g -Iqcommon
+
+Q3Asm = q3asm.exe
+Q3AsmOpts = -m
+
+##==========================================================##
+##		Directories											##
+##==========================================================##
+
+# These have to match the build rules!
+IntDir = obj/vm
+OutDir = bin/vm
+
+obj :
+	md obj
+
+obj/vm : obj
+	cd obj
+	md vm
+	cd ..
+
+bin :
+	md bin
+
+bin/vm : bin
+	cd bin
+	md vm
+	cd ..
+
+build_dirs : obj obj/vm bin bin/vm
+
+# Just delete the folders we build into to clean.
+clean :
+	-rd /S /Q bin\vm
+	-rd /S /Q obj\vm
+
+##==========================================================##
+##		ASM Build Rules										##
+##==========================================================##
+
+{ui}.c{$(IntDir)}.asm :
+	echo $<
+	$(Lcc) $(LccOpts) -Iui -o $(IntDir)/$(*B).asm $<
+
+{cgame}.c{$(IntDir)}.asm :
+	echo $<
+	$(Lcc) $(LccOpts) -Icgame -o $(IntDir)/$(*B).asm $<
+
+{game}.c{$(IntDir)}.asm :
+	echo $<
+	$(Lcc) $(LccOpts) -Igame -o $(IntDir)/$(*B).asm $<
+
+{qcommon}.c{$(IntDir)}.asm :
+	echo $<
+	$(Lcc) $(LccOpts) -o $(IntDir)/$(*B).asm $<
+
+##==========================================================##
+##		Shared Stuff										##
+##==========================================================##
+
+# List of ASM files that get shared between all three modules.
+SharedAsmUiCgG = \
+	$(IntDir)/bg_lib.asm \
+	$(IntDir)/bg_misc.asm \
+	$(IntDir)/bg_spacetrader.asm \
+	$(IntDir)/q_math.asm \
+	$(IntDir)/q_shared.asm
+
+# List of ASM files that get shared between game and cgame.
+SharedAsmCgG = $(SharedAsmUiCgG) \
+	$(IntDir)/bg_pmove.asm \
+	$(IntDir)/bg_slidemove.asm
+
+##==========================================================##
+##		UI-Specific											##
+##==========================================================##
+
+# List of UI-only ASM files to be built.
+UiAsm = \
+	$(IntDir)/ui_main.asm \
+	$(IntDir)/ui_anim.asm \
+	$(IntDir)/ui_atoms.asm \
+	$(IntDir)/ui_shared.asm \
+	$(IntDir)/ui_players.asm \
+	$(IntDir)/ui_gameinfo.asm \
+	$(IntDir)/ui_spacetrader.asm \
+	$(IntDir)/ui_vote.asm \
+	$(IntDir)/ui_util.asm \
+	$(IntDir)/ui_graph.asm \
+	$(IntDir)/ui_solarsystem.asm
+
+# UI build rules.
+vm_ui : build_dirs $(OutDir)/ui.qvm
+
+$(OutDir)/ui.qvm : $(UiAsm) $(SharedAsmUiCgG)
+	$(Q3Asm) $(Q3AsmOpts) -f <<$(IntDir)/ui.q3asm
+-o $(OutDir)/ui.qvm
+$(UiAsm:  = ^
+)
+$(SharedAsmUiCgG:  = ^
+)
+ui/ui_syscalls.asm
+<<KEEP
+
+##==========================================================##
+##		CGAME-Specific										##
+##==========================================================##
+
+# List of CGAME-only ASM files to be built.
+
+CGameAsm = \
+	$(IntDir)/cg_main.asm \
+	$(IntDir)/cg_spacetrader.asm \
+	$(IntDir)/cg_consolecmds.asm \
+	$(IntDir)/cg_draw.asm \
+	$(IntDir)/cg_drawtools.asm \
+	$(IntDir)/cg_effects.asm \
+	$(IntDir)/cg_ents.asm \
+	$(IntDir)/cg_event.asm \
+	$(IntDir)/cg_info.asm \
+	$(IntDir)/cg_localents.asm \
+	$(IntDir)/cg_marks.asm \
+	$(IntDir)/cg_players.asm \
+	$(IntDir)/cg_playerstate.asm \
+	$(IntDir)/cg_predict.asm \
+	$(IntDir)/cg_servercmds.asm \
+	$(IntDir)/cg_snapshot.asm \
+	$(IntDir)/cg_view.asm \
+	$(IntDir)/cg_weapons.asm
+	
+# CGAME build rules.
+vm_cgame : build_dirs $(OutDir)/cgame.qvm
+
+$(OutDir)/cgame.qvm : $(CGameAsm) $(SharedAsmCgG)
+	$(Q3Asm) $(Q3AsmOpts) -f <<$(IntDir)/cgame.q3asm
+-o $(OutDir)/cgame.qvm
+$(CGameAsm:  = ^
+)
+$(SharedAsmCgG:  = ^
+)
+cgame/cg_syscalls.asm
+<<KEEP
+
+##==========================================================##
+##		GAME-Specific										##
+##==========================================================##
+
+# List of GAME-only ASM files to be built.
+
+GameAsm = \
+	$(IntDir)/g_main.asm \
+	$(IntDir)/g_spacetrader.asm \
+	$(IntDir)/g_active.asm \
+	$(IntDir)/g_bot.asm \
+	$(IntDir)/g_client.asm \
+	$(IntDir)/g_cmds.asm \
+	$(IntDir)/g_combat.asm \
+	$(IntDir)/g_items.asm \
+	$(IntDir)/g_mem.asm \
+	$(IntDir)/g_misc.asm \
+	$(IntDir)/g_missile.asm \
+	$(IntDir)/g_mover.asm \
+	$(IntDir)/g_session.asm \
+	$(IntDir)/g_spawn.asm \
+	$(IntDir)/g_svcmds.asm \
+	$(IntDir)/g_target.asm \
+	$(IntDir)/g_team.asm \
+	$(IntDir)/g_trigger.asm \
+	$(IntDir)/g_utils.asm \
+	$(IntDir)/g_weapon.asm \
+	$(IntDir)/ai_dmnet.asm \
+	$(IntDir)/ai_dmq3.asm \
+	$(IntDir)/ai_team.asm \
+	$(IntDir)/ai_main.asm \
+	$(IntDir)/ai_chat.asm \
+	$(IntDir)/ai_cmd.asm \
+	$(IntDir)/ai_vcmd.asm
+
+# GAME build rules.
+vm_game : build_dirs $(OutDir)/game.qvm
+
+$(OutDir)/game.qvm : $(GameAsm) $(SharedAsmCgG)
+	$(Q3Asm) $(Q3AsmOpts) -f <<$(IntDir)/game.q3asm
+-o $(OutDir)/game.qvm
+$(GameAsm:  = ^
+)
+$(SharedAsmCgG:  = ^
+)
+game/g_syscalls.asm
+<<KEEP

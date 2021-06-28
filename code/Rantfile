@@ -1,0 +1,345 @@
+#pull some variables out of our environment
+var.env %w(CC CPP CFLAGS CPPFLAGS)
+
+#assign some defaults
+var[:CC] = 'gcc' unless var[:CC]
+var[:CPP] = 'g++' unless var[:CPP]
+
+
+CFLAGS=' -fno-stack-protector -pipe -Wall -Wno-unused-parameter -Wno-missing-field-initializers -Wno-switch -Wstrict-aliasing=2 -D_REENTRANT -DNO_VM_COMPILED -DHAVE_EXECINFO_H -DDLL_ONLY -DDEVELOPER -DPRINT_CONSOLE_SPAM -m32 -I../libs/glew/include/ -Iunix/'
+UI_CFLAGS=' '
+CGAME_CFLAGS=' '
+GAME_CFLAGS=' '
+BOTLIB_CFLAGS='-DBOTLIB'
+DEDICATED_CFLAGS='-DDEDICATED'
+SQL_CFLAGS=' '
+RENDER_CFLAGS='-I../libs/glew/include -O1 -DBUILD_RENDERER '
+VORBIS_LIBS='../libs/libvorbis-1.1.2/lib/.libs/libvorbisfile.a ../libs/libvorbis-1.1.2/lib/.libs/libvorbis.a ../libs/libogg-1.1.3/src/.libs/libogg.a'
+#OPENAL_LIBS="../libs/openal-0.0.8/src/.libs/libopenal.a"
+
+BASE_DIR='/home/scott/HermitWorks/st-clean/'
+
+if var[:release]
+  OUTPUT_DIR="release"
+  DEBUG=false
+else
+  DEBUG=true
+  OUTPUT_DIR="build"
+end
+
+if var[:platform]
+  platform = var[:platform]
+else
+  platform = RUBY_PLATFORM
+end
+
+
+task :default =>[:install]
+
+case platform
+  when /powerpc-darwin/
+    BASE_CFLAGS="#{CFLAGS} -gfull -DMACOS_X -DDEBUG"
+    SHLIB_CFLAGS="-fPIC -fno-common"
+    CLIENT_LDFLAGS="-framework Cocoa -framework OpenGL ../libs/glew/lib-osx/libGLEW.dylib"
+    LIBSDLMAIN=''
+    ARCH='ppc'
+    SHLIB_EXT='so'
+    EXTENSION=''
+    CLIENT_CFLAGS='-I../libs/glew/include -I../libs/SDL12/include -DUSE_SDL'
+    DED_PLATFORM_FILES = ['linux_signals.o', 'linux_common.o', 'unix_main.o', 'unix_net.o',
+                          'unix_shared.o', 'vm_ppc.o'
+                          ].collect{|file| "#{OUTPUT_DIR}/ded/" + file}
+    CLIENT_PLATFORM_FILES = ['vm_ppc.o', 'unix_main.o', 'unix_net.o', 'unix_shared.o', 
+                              'linux_signals.o', 'linux_common.o', 'linux_snd.o'
+                              ].collect{|file| "#{OUTPUT_DIR}/client/" + file}
+  when /win32/
+    BASE_CFLAGS="#{CFLAGS} -DNDEBUG -O2 -march=i586 -fomit-frame-pointer -ffast-math -falign-loops=2 -funroll-loops -falign-jumps=2 -falign-functions=2 -fstrength-reduce -m32 -D_WIN32 "
+    BASE_CPPFLAGS="#{CFLAGS} -msse2"
+    BASE_CPPFLAGS << " -DNDEBUG -O2 -march=i586 -fomit-frame-pointer -ffast-math -funroll-loops -falign-loops=2 -falign-jumps=2 -falign-functions=2 -fstrength-reduce "
+    CLIENT_CFLAGS=''
+    SHLIB_EXT='dll'
+    SHLIB_LDFLAGS="-shared"
+    SHLIB_CFLAGS='-fPIC'
+    EXTENSION='.exe'
+    ARCH='x86'
+    OUTPUT_DIR = OUTPUT_DIR << "-win32"
+    RENDER_LDFLAGS=" -mglew"
+    CLIENT_LDFLAGS=' -mwindows -lwsock32 -lgdi32 -lwinmm -lole32 -m32'
+    CLIENT_PLATFORM_FILES = ['win_gamma.o', 'win_glimp.o', 'win_input.o', 'win_main.o', 'win_net.o', 'win_shared.o', 'win_snd.o', 'win_syscon.o', 'win_wndproc.o', 'win_resource.o'].collect{|file| "#{OUTPUT_DIR}/client/" + file}
+    var[:CC]='i386-mingw32msvc-gcc'
+    var[:CPP]='i386-mingw32msvc-g++'
+
+  when /i[0-9]86-linux/
+    BASE_CFLAGS="#{CFLAGS} #{var[:CFLAGS]} -std=gnu99 "
+    BASE_CFLAGS << " -g -DDEBUG -O0 -D_DEBUG -march=i586  " if DEBUG
+    BASE_CFLAGS << " -DNDEBUG -O3 -march=i586 " unless DEBUG
+    BASE_CPPFLAGS="#{CFLAGS} #{var[:CPPFLAGS]} -msse2"
+    BASE_CPPFLAGS << " -g -DDEBUG -O1 -march=i586 " if DEBUG
+    BASE_CPPFLAGS << " -DNDEBUG -O3 -march=i586 " unless DEBUG
+    EXTENSION=''
+
+    if var[:CC] == 'icc' then BASE_CFLAGS << ' -wd193 -wd981 -wd1418 -wd1 -wd1419 -wd1469 -wd1682 -wd1684 -wd271 -wd279 -wd424 -wd537 -wd556 -wd1572 -wd188 -wd310 ' end
+    if var[:CPP] == 'icpc' then BASE_CFLAGS << ' -wd193 -wd981 -wd1418 -wd1 -wd1419 -wd1469 -wd1682 -wd1684 -wd271 -wd279 -wd424 -wd537 -wd556 -wd1572 -wd188 -wd310 ' end
+    ARCH='i386'
+    SHLIB_EXT='so'
+    SHLIB_CFLAGS=''
+    SHLIB_LDFLAGS='-shared'
+    DED_PLATFORM_FILES = ['linux_signals.o', 'linux_common.o', 'unix_main.o', 
+                          'unix_net.o', 'unix_shared.o', 'vm_x86.o', 'ftol.o', 'snapvector.o',
+                          'matha.o'
+                          ].collect{|file| "#{OUTPUT_DIR}/ded/" + file}
+    CLIENT_PLATFORM_FILES = ['vm_x86.o', 'unix_main.o', 'unix_net.o', 
+                             'unix_shared.o', 'linux_signals.o', 
+                             'linux_common.o', 
+                             'linux_snd.o', 'drm.o',
+                             'ftol.o', 'snapvector.o', 'snd_mixa.o', 'matha.o'
+                          ].collect{|file| "#{OUTPUT_DIR}/client/" + file}
+    CLIENT_CFLAGS="-I../libs/glew/include -DUSE_CODEC_VORBIS "  ##{`sdl-config --cflags`.strip}"
+    CLIENT_LDFLAGS="-L/usr/X11R6/lib -lX11 -lXext -lXxf86vm ../libs/curl-7.15.3/lib/.libs/libcurl.a -lidn -lssl -lGL -ldl -lm ../libs/glew/lib/libGLEW.a -lpng -I/usr/X11R6/include -lpthread "
+    DEDICATED_LDFLAGS='-ldl ../libs/curl-7.15.3/lib/.libs/libcurl.a -lssl -lidn -lm'
+    RENDER_LDFLAGS=" ../libs/glew/lib/libGLEW.a -lpng "
+    LIBSDLMAIN=''
+    RENDER_CFLAGS << ' -I/usr/X11R6/include '
+    GECKO_CFLAGS = " -I../libs/gecko-sdk/include " + RENDER_CFLAGS
+end 
+
+
+task :install =>[:all] do
+  sys.cp "#{OUTPUT_DIR}/gameplayer-#{ARCH}#{EXTENSION}", BASE_DIR
+#  sys.cp "#{OUTPUT_DIR}/st/librender-base#{ARCH}.#{SHLIB_EXT}", BASE_DIR + "/st"
+  #sys.cp "#{OUTPUT_DIR}/gameplayer-#{ARCH}#{EXTENSION}.#{SHLIB_EXT}", ENV['HOME'] + "/.mozilla/plugins"
+
+  #sys.cp "#{OUTPUT_DIR}/gameplayer-ded-#{ARCH}#{EXTENSION}", BASE_DIR
+  sys.cp "#{OUTPUT_DIR}/st/ui#{ARCH}.#{SHLIB_EXT}", BASE_DIR + "/st"
+  sys.cp "#{OUTPUT_DIR}/st/game#{ARCH}.#{SHLIB_EXT}", BASE_DIR + "/st"
+  sys.cp "#{OUTPUT_DIR}/st/cgame#{ARCH}.#{SHLIB_EXT}", BASE_DIR + "/st"
+
+end
+
+task :all =>[:modules, :engine]
+
+task :engine => [ 
+                "#{OUTPUT_DIR}/gameplayer-#{ARCH}#{EXTENSION}"]
+
+task :modules => ["#{OUTPUT_DIR}/st/ui#{ARCH}.#{SHLIB_EXT}", 
+                  "#{OUTPUT_DIR}/st/cgame#{ARCH}.#{SHLIB_EXT}", 
+                  "#{OUTPUT_DIR}/st/game#{ARCH}.#{SHLIB_EXT}",]
+                  #"#{OUTPUT_DIR}/st/librender-base#{ARCH}.#{SHLIB_EXT}"]
+
+UI_FILES = ['ui_atoms.o', 'ui_gameinfo.o', 'ui_main.o', 'ui_players.o', 
+            'ui_syscalls.o', 'ui_shared.o', 'bg_misc.o', 'ui_graph.o',
+            'q_math.o', 'q_shared.o', 'ui_vote.o', 'ui_spacetrader.o', 
+            'bg_spacetrader.o', 'bg_lib.o', 'ui_solarsystem.o', 'ui_anim.o'
+          ].collect{|file| "#{OUTPUT_DIR}/st/ui/" + file}
+CGAME_FILES = ['bg_misc.o', 'bg_pmove.o', 'bg_slidemove.o', 'cg_consolecmds.o', 
+              'cg_draw.o', 'cg_drawtools.o', 'cg_effects.o', 'cg_ents.o', 
+              'cg_event.o', 'cg_info.o', 'cg_localents.o', 'cg_main.o', 'cg_marks.o', 
+              'cg_players.o', 'cg_playerstate.o', 'cg_predict.o', 'cg_ads.o',
+              'cg_servercmds.o', 'cg_snapshot.o', 'cg_syscalls.o', 'cg_view.o', 'cg_weapons.o',
+              'q_math.o', 'q_shared.o', 'cg_spacetrader.o', 'bg_spacetrader.o'
+              ].collect{|file| "#{OUTPUT_DIR}/st/cgame/" + file}
+GAME_FILES = ['ai_chat.o', 'ai_cmd.o', 'ai_dmnet.o', 'ai_dmq3.o', 'ai_main.o', 
+              'ai_team.o', 'ai_vcmd.o', 'bg_misc.o', 'bg_pmove.o', 'bg_slidemove.o', 'g_active.o',
+              'g_bot.o', 'g_client.o', 'g_cmds.o', 'g_combat.o', 'g_items.o', 
+              'g_main.o', 'g_mem.o', 'g_misc.o', 'g_missile.o', 'g_mover.o', 'g_session.o', 
+              'g_spawn.o', 'g_svcmds.o', 'g_syscalls.o', 'g_target.o', 'g_team.o',
+              'g_trigger.o', 'g_utils.o', 'g_weapon.o', 'q_math.o', 'q_shared.o', 'g_spacetrader.o',
+              'bg_spacetrader.o'
+            ].collect{|file| "#{OUTPUT_DIR}/st/game/" + file}
+
+CORE_FILES = ['sv_bot.o', 'sv_client.o', 'sv_ccmds.o', 'sv_game.o', 'sv_init.o', 'sv_main.o',
+              'sv_net_chan.o', 'sv_snapshot.o', 'sv_world.o', 'cm_load.o', 'cm_polylib.o',
+              'cm_test.o', 'cm_trace.o', 'cm_patch.o', 'cmd.o', 'common.o', 'cvar.o', 'files.o',
+              'md4.o', 'msg.o', 'net_chan.o', 'huffman.o','q_shared.o', 'q_math.o', 'unzip.o',
+              'vm.o', 'vm_interpreted.o', 'net_http.o', 'cm_fastload.o', 'md5.o', 'rand.o', 'net_irc.o'
+              ]
+              
+BOTLIB_FILES = ['be_aas_bspq3.o', 'be_aas_cluster.o', 'be_aas_debug.o', 'be_aas_entity.o',
+                'be_aas_file.o', 'be_aas_main.o', 'be_aas_move.o', 'be_aas_optimize.o',
+                'be_aas_reach.o', 'be_aas_route.o', 'be_aas_routealt.o', 'be_aas_sample.o',
+                'be_ai_char.o', 'be_ai_chat.o', 'be_ai_gen.o', 'be_ai_goal.o', 'be_ai_move.o',
+                'be_ai_weap.o', 'be_ai_weight.o', 'be_ea.o', 'be_interface.o', 'l_crc.o',
+                'l_libvar.o', 'l_log.o', 'l_memory.o', 'l_precomp.o', 'l_script.o', 'l_struct.o'
+                ].collect{|file| "#{OUTPUT_DIR}/botlib/" + file}
+DEDICATED_FILES = ['null_client.o', 'null_input.o', 'null_snddma.o'
+                ].collect{|file| "#{OUTPUT_DIR}/ded/" + file}
+                
+CLIENT_FILES = ['cl_cgame.o', 'cl_cin.o', 'cl_console.o', 'cl_input.o', 'cl_keys.o',
+                'cl_main.o', 'cl_net_chan.o', 'cl_parse.o', 'cl_scrn.o', 'cl_ui.o', 'cl_text.o',
+                'snd_dma.o', 'snd_mem.o', 'snd_adpcm.o', 'snd_wavelet.o', 'snd_mix.o', 
+                'snd_codec.o', 'snd_main.o', 'snd_codec_ogg.o'
+                ].collect{|file| "#{OUTPUT_DIR}/client/" + file}
+RENDER_FILES = ['tr_backend.o', 'tr_bsp.o', 'tr_lightmapconv.o',
+                'tr_cmds.o', 'tr_curve.o', 'tr_draw2d.o', 'tr_flares.o', 
+                'tr_font.o', 'tr_image.o', 'tr_image_dds.o', 'tr_init.o',
+                'tr_light.o', 'tr_main.o', 'tr_marks.o', 'tr_mesh.o', 
+                'tr_model.o', 'tr_noise.o', 'tr_scene.o', 'tr_shade.o',
+                'tr_shade_calc.o', 'tr_shader.o', 'tr_shadows.o', 'tr_sky.o',
+                'tr_state.o', 'tr_state-states.o', 'tr_state-states-textures.o',
+                'tr_surface.o', 'tr_text.o', 'tr_world.o', 'tr_x42.o', 
+                'linux_glimp.o', 'unix_cpuinfo.o', 'tr_x42-load.o',
+                'tr_shade_programs.o', 'tr_postproc.o', 'tr_x42-sse.o',
+                'tr_x42-math.o', 'tr_x42-pose.o', 'tr_x42-animverts.o',
+                'tr_screenshot.o'
+                ].collect{|file| "#{OUTPUT_DIR}/renderer/" + file}
+
+SQL_FILES =   ['sql.o', 'sql_create.o', 'sql_delete.o', 'sql_eval.o', 
+                'sql_format.o', 'sql_insert.o', 'sql_msg.o', 
+                'sql_parse.o', 'sql_search.o', 'sql_select.o', 
+                'sql_update.o', 'sql_parser.o', 'sql_strings.o',
+                'sql_alter.o'
+                ].collect{|file| "#{OUTPUT_DIR}/sql/" + file}
+GECKO_FILES =   ['entry_unix.o'].collect{|file| "#{OUTPUT_DIR}/gecko/" + file}
+FORK_FILES =    ["fork_unix.o"].collect{|file| "#{OUTPUT_DIR}/gecko/" + file}
+
+import "c/dependencies", "directedrule"
+
+#add more dirs to the %w( ) section to include the headers in the valid paths
+gen C::Dependencies, :search => ['cgame', 'game', 'botlib', 'qcommon', 'ui', 'unix', 'win32', '../ui', 'renderer']
+gen Action do source "c_dependencies" end
+
+#generate our output directories
+gen Directory, "#{OUTPUT_DIR}/st/game"
+gen Directory, "#{OUTPUT_DIR}/st/ui"
+gen Directory, "#{OUTPUT_DIR}/st/cgame"
+gen Directory, "#{OUTPUT_DIR}/botlib"
+gen Directory, "#{OUTPUT_DIR}/renderer"
+gen Directory, "#{OUTPUT_DIR}/ded"
+gen Directory, "#{OUTPUT_DIR}/client"
+gen Directory, "#{OUTPUT_DIR}/sql"
+gen Directory, "#{OUTPUT_DIR}/gecko"
+
+
+#Compile rules for subdirectories
+#rule for building targets in build/st/ui
+ui_rule = gen DirectedRule, "#{OUTPUT_DIR}/st/ui" => sys["ui","qcommon", "game"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{SHLIB_CFLAGS} #{UI_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#rule for building targets in build/st/cgame
+cgame_rule = gen DirectedRule, "#{OUTPUT_DIR}/st/cgame" => sys["ui","qcommon", "game", "cgame"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{SHLIB_CFLAGS} #{CGAME_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#rule for building targets in build/st/game
+game_rule = gen DirectedRule, "#{OUTPUT_DIR}/st/game" => sys["game","qcommon"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{SHLIB_CFLAGS} #{GAME_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#rule for building targets in build/botlib 
+botlib_rule = gen DirectedRule, "#{OUTPUT_DIR}/botlib"=> sys["botlib"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{BOTLIB_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+
+#rule for building targets in build/sql
+gecko_rule = gen DirectedRule, "#{OUTPUT_DIR}/gecko"=> sys["gecko"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{GECKO_CFLAGS} -c -o #{t.name} #{t.source}"
+end 
+
+#rule for building targets in build/sql
+sql_rule = gen DirectedRule, "#{OUTPUT_DIR}/sql"=> sys["sql"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{SQL_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+
+#rule for building sql_parser.c
+file "sql/sql_parser.c"=>'sql/sql_parser.y' do |t|
+  sys "../../Tools/Lemon/release/lemon #{t.name}"
+end
+#rule for building sql_parser.o
+file "#{OUTPUT_DIR}/sql/sql_parser.o"=>'sql/sql_parser.c' do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{CLIENT_CFLAGS} -Wno-error -c -o #{t.name} #{t.source}"
+end
+
+
+#rule for building targets in build/ded 
+dedicated_rule = gen DirectedRule, "#{OUTPUT_DIR}/ded"=> sys["server", "qcommon", "unix", "game", "null"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{DEDICATED_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#rule for building targets in build/client
+client_rule = gen DirectedRule, "#{OUTPUT_DIR}/client"=> 
+  sys["client","server", "qcommon", "game", "unix", "win32"], :o => :c do |t|
+  
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{CLIENT_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#rule for building nasm files in client dir
+nasm_rule = gen DirectedRule, "#{OUTPUT_DIR}/client"=>sys["unix"], :o=>:nasm do |t|
+  sys "nasm -f elf -o #{t.name} #{t.source}"
+end
+#rule for building nasm files in ded dir
+nasm_rule = gen DirectedRule, "#{OUTPUT_DIR}/ded"=>sys["unix"], :o=>:nasm do |t|
+  sys "nasm -f elf -o #{t.name} #{t.source}"
+end
+
+#rule for building .s files
+as_rule = gen DirectedRule, "#{OUTPUT_DIR}/client"=>sys["unix"], :o=>:s do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} -DELF -x assembler-with-cpp -o #{t.name} -c #{t.source}"
+end
+#rule for building .s files
+as_rule = gen DirectedRule, "#{OUTPUT_DIR}/ded"=>sys["unix"], :o=>:s do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} -DELF -x assembler-with-cpp -o #{t.name} -c #{t.source}"
+end
+
+#rule for building .s files
+as_rule = gen DirectedRule, "#{OUTPUT_DIR}/renderer"=>sys["unix"], :o=>:s do |t|
+  sys "#{var[:CPP]} #{BASE_CFLAGS} -DELF -x assembler-with-cpp -o #{t.name} -c #{t.source}"
+end
+
+
+#rule for building targets in build/renderer
+render_rule = gen DirectedRule, "#{OUTPUT_DIR}/renderer"=> sys["renderer", "unix", "qcommon"], :o => :c do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{SHLIB_CFLAGS} #{RENDER_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#rule for building tr_x32-sse.o
+file "#{OUTPUT_DIR}/renderer/tr_x42-sse.o"=>'renderer/tr_x42-sse.c' do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{CLIENT_CFLAGS} #{RENDER_CFLAGS} -msse2 -c -o #{t.name} #{t.source}"
+end
+#special rule for building client/vm_x86.c
+file "#{OUTPUT_DIR}/client/vm_x86.o"=>'qcommon/vm_x86.c' do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{CLIENT_CFLAGS} -Wno-error -c -o #{t.name} #{t.source}"
+end
+#special rule for building ded/vm_x86.c
+file "#{OUTPUT_DIR}/ded/vm_x86.o"=>'qcommon/vm_x86.c' do |t|
+  sys "#{var[:CC]} #{BASE_CFLAGS} #{CLIENT_CFLAGS} -Wno-error -c -o #{t.name} #{t.source}"
+end
+
+#use g++ for win_glimp.cpp
+file "#{OUTPUT_DIR}/client/win_glimp.o"=>'win32/win_glimp.cpp' do |t|
+  sys "#{var[:CPP]} #{BASE_CPPFLAGS} #{CLIENT_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+#use g++ for win_gamma.cpp
+file "#{OUTPUT_DIR}/client/win_gamma.o"=>'win32/win_gamma.cpp' do |t|
+  sys "#{var[:CPP]} #{BASE_CPPFLAGS} #{CLIENT_CFLAGS} -c -o #{t.name} #{t.source}"
+end
+
+
+#rule for linking the ui lib
+file "#{OUTPUT_DIR}/st/ui#{ARCH}.#{SHLIB_EXT}"=>UI_FILES do |t|
+  sys "#{var[:CC]} #{SHLIB_LDFLAGS} -o #{t.name} #{t.prerequisites.join(' ')}"
+end
+#rule for linking the cgame lib
+file "#{OUTPUT_DIR}/st/cgame#{ARCH}.#{SHLIB_EXT}"=>CGAME_FILES do |t|
+  sys "#{var[:CC]} #{SHLIB_LDFLAGS} -o #{t.name} #{t.prerequisites.join(' ')}"
+end
+#rule for linking the game lib
+file "#{OUTPUT_DIR}/st/game#{ARCH}.#{SHLIB_EXT}"=>GAME_FILES do |t|
+  sys "#{var[:CC]} #{SHLIB_LDFLAGS} -o #{t.name} #{t.prerequisites.join(' ')}"
+end
+#rule for linking the renderer lib
+file "#{OUTPUT_DIR}/st/librender-base#{ARCH}.#{SHLIB_EXT}"=>RENDER_FILES do |t|
+  sys "#{var[:CC]} #{SHLIB_LDFLAGS} -o #{t.name} #{t.prerequisites.join(' ')} #{RENDER_LDFLAGS}"
+end
+
+#rule for linking the client/server
+file "#{OUTPUT_DIR}/gameplayer-#{ARCH}#{EXTENSION}"=>
+    CORE_FILES.collect{|file| "#{OUTPUT_DIR}/client/" + file} + CLIENT_FILES + BOTLIB_FILES + CLIENT_PLATFORM_FILES + SQL_FILES + RENDER_FILES do |t|
+  sys "#{var[:CC]} -o #{t.name} #{t.prerequisites.join(' ')} #{LIBSDLMAIN} #{VORBIS_LIBS} #{CLIENT_LDFLAGS}"
+	sys.cp t.name, BASE_DIR
+end 
+#rule for linking the server
+file "#{OUTPUT_DIR}/gameplayer-ded-#{ARCH}#{EXTENSION}"=>
+    CORE_FILES.collect{|file| "#{OUTPUT_DIR}/ded/" + file} + BOTLIB_FILES + DEDICATED_FILES + DED_PLATFORM_FILES + SQL_FILES do |t|
+  sys "#{var[:CC]} -o #{t.name} #{t.prerequisites.join(' ')} #{DEDICATED_LDFLAGS}"
+end
+
+#rule for linking the plugin
+file "#{OUTPUT_DIR}/gameplayer-#{ARCH}#{EXTENSION}.#{SHLIB_EXT}"=> FORK_FILES do |t| #CORE_FILES.collect{|file| "#{OUTPUT_DIR}/client/" + file} + CLIENT_FILES + BOTLIB_FILES + CLIENT_PLATFORM_FILES + SQL_FILES + RENDER_FILES + GECKO_FILES  do |t|
+  sys "#{var[:CC]} -o #{t.name} #{t.prerequisites.join(' ')} #{SHLIB_LDFLAGS}"
+end
+

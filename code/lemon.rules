@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="grammar"
+	Version="8.00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="parse"
+			DisplayName="parse"
+			CommandLine="$(SolutionDir)..\tools\Lemon\release\Lemon.exe $(InputPath)"
+			Outputs="$(InputName).c"
+			FileExtensions="*.y"
+			>
+			<Properties>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>

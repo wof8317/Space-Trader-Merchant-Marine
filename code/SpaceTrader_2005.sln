@@ -1,0 +1,88 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlib", "botlib\botlib_2005.vcproj", "{A410161F-AE9F-485D-A01F-5294891430A6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cgame", "cgame\cgame_2005.vcproj", "{C878E295-CB82-4B40-8ECF-5CE5525466FA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "game\game_2005.vcproj", "{F9EE10DA-2404-4154-B904-F93C936C040A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpaceTrader", "SpaceTrader_2005.vcproj", "{81CB51C4-B434-4E12-B69B-BAEE102F2852}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA} = {C878E295-CB82-4B40-8ECF-5CE5525466FA}
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA} = {3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}
+		{F9EE10DA-2404-4154-B904-F93C936C040A} = {F9EE10DA-2404-4154-B904-F93C936C040A}
+		{C7C390EA-69FB-4ED9-886C-C09519268607} = {C7C390EA-69FB-4ED9-886C-C09519268607}
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19} = {A8EAC38E-C7DA-42F8-811D-77FD092B9D19}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui", "ui\ui_2005.vcproj", "{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine", "engine_2005.vcproj", "{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vms", "vms_2005.vcproj", "{C7C390EA-69FB-4ED9-886C-C09519268607}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "render-base", "renderer\render_2005.vcproj", "{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Final Release|Win32 = Final Release|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A410161F-AE9F-485D-A01F-5294891430A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A410161F-AE9F-485D-A01F-5294891430A6}.Debug|Win32.Build.0 = Debug|Win32
+		{A410161F-AE9F-485D-A01F-5294891430A6}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{A410161F-AE9F-485D-A01F-5294891430A6}.Final Release|Win32.Build.0 = Final Release|Win32
+		{A410161F-AE9F-485D-A01F-5294891430A6}.Release|Win32.ActiveCfg = Release|Win32
+		{A410161F-AE9F-485D-A01F-5294891430A6}.Release|Win32.Build.0 = Release|Win32
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA}.Debug|Win32.Build.0 = Debug|Win32
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA}.Final Release|Win32.Build.0 = Final Release|Win32
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA}.Release|Win32.ActiveCfg = Release|Win32
+		{C878E295-CB82-4B40-8ECF-5CE5525466FA}.Release|Win32.Build.0 = Release|Win32
+		{F9EE10DA-2404-4154-B904-F93C936C040A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F9EE10DA-2404-4154-B904-F93C936C040A}.Debug|Win32.Build.0 = Debug|Win32
+		{F9EE10DA-2404-4154-B904-F93C936C040A}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{F9EE10DA-2404-4154-B904-F93C936C040A}.Final Release|Win32.Build.0 = Final Release|Win32
+		{F9EE10DA-2404-4154-B904-F93C936C040A}.Release|Win32.ActiveCfg = Release|Win32
+		{F9EE10DA-2404-4154-B904-F93C936C040A}.Release|Win32.Build.0 = Release|Win32
+		{81CB51C4-B434-4E12-B69B-BAEE102F2852}.Debug|Win32.ActiveCfg = Debug|Win32
+		{81CB51C4-B434-4E12-B69B-BAEE102F2852}.Debug|Win32.Build.0 = Debug|Win32
+		{81CB51C4-B434-4E12-B69B-BAEE102F2852}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{81CB51C4-B434-4E12-B69B-BAEE102F2852}.Final Release|Win32.Build.0 = Final Release|Win32
+		{81CB51C4-B434-4E12-B69B-BAEE102F2852}.Release|Win32.ActiveCfg = Release|Win32
+		{81CB51C4-B434-4E12-B69B-BAEE102F2852}.Release|Win32.Build.0 = Release|Win32
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}.Debug|Win32.Build.0 = Debug|Win32
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}.Final Release|Win32.Build.0 = Final Release|Win32
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}.Release|Win32.ActiveCfg = Release|Win32
+		{A8EAC38E-C7DA-42F8-811D-77FD092B9D19}.Release|Win32.Build.0 = Release|Win32
+		{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}.Debug|Win32.Build.0 = Debug|Win32
+		{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}.Final Release|Win32.Build.0 = Final Release|Win32
+		{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}.Release|Win32.ActiveCfg = Release|Win32
+		{93A31E20-0519-4ACE-8A0A-09FC43DDC6C3}.Release|Win32.Build.0 = Release|Win32
+		{C7C390EA-69FB-4ED9-886C-C09519268607}.Debug|Win32.ActiveCfg = Release|Win32
+		{C7C390EA-69FB-4ED9-886C-C09519268607}.Debug|Win32.Build.0 = Release|Win32
+		{C7C390EA-69FB-4ED9-886C-C09519268607}.Final Release|Win32.ActiveCfg = Release|Win32
+		{C7C390EA-69FB-4ED9-886C-C09519268607}.Final Release|Win32.Build.0 = Release|Win32
+		{C7C390EA-69FB-4ED9-886C-C09519268607}.Release|Win32.ActiveCfg = Release|Win32
+		{C7C390EA-69FB-4ED9-886C-C09519268607}.Release|Win32.Build.0 = Release|Win32
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}.Debug|Win32.Build.0 = Debug|Win32
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}.Final Release|Win32.ActiveCfg = Final Release|Win32
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}.Final Release|Win32.Build.0 = Final Release|Win32
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}.Release|Win32.ActiveCfg = Release|Win32
+		{3EC20DA3-BBE5-44BD-9C87-1187BF42BFFA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		AMDCaProjectFile = C:\SpaceTrader\code\quake3-1.32b\code\CodeAnalyst\SpaceTrader_2005.caw
+	EndGlobalSection
+EndGlobal

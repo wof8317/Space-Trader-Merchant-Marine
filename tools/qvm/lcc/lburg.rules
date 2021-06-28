@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="lburg"
+	Version="8.00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="lburg"
+			DisplayName="lburg"
+			CommandLine="&quot;$(SolutionDir)bin\$(ConfigurationName)\lburg.exe&quot; &quot;$(InputPath)&quot; &quot;$(InputDir)\$(InputName).c&quot;"
+			Outputs="$(InputDir)\$(InputName).c"
+			FileExtensions="*.md"
+			>
+			<Properties>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>
